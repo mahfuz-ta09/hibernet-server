@@ -3,7 +3,6 @@ import { fileUploadHelper } from "../../helper/fileUploadHelper"
 const { getDb } = require('../../config/connectDB')
 
 
-
 const createSpecialties = async( req: Request , res: Response ) => {
     try{
         const db = getDb()
