@@ -33,6 +33,7 @@ app.get('/test', async (req: Request, res: Response) => {
   })
 })
 
+
 app.all('*',(req:Request,res:Response) =>{
     res.status(404)
     if(req.accepts('html')){

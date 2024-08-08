@@ -1,5 +1,6 @@
 import { Request , Response } from "express"
 import { UserObject } from "./commonType"
+import sendResponse from "../../helper/sendResponse"
 const { getDb } = require('../../config/connectDB')
 const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
@@ -16,36 +17,45 @@ const logIn = async(req: Request, res: Response) => {
         const { email , password } = req.body
 
         if(!email || !password){
-            return res.status(400).json({
-                message: "No empty field allowed"
+            return sendResponse( res, {
+                statusCode: 500,
+                success: false,
+                message: 'No empty field allowed!!!',
             })
         }
 
-
         if(emaiReg.test(email) === false){
-            return res.status(400).json({
-                message: "Invalid email format"
+            return sendResponse( res, {
+                statusCode: 500,
+                success: false,
+                message: 'Invalid email format!!!',
             })
         }
 
         if(password.length < 6){
-            return res.status(400).json({
-                message: "Password is to short"
+            return sendResponse( res, {
+                statusCode: 500,
+                success: false,
+                message: 'Password is to short!!!',
             })
         }
         const query = { email: email }
         
         const user = await collection.findOne(query)
         if(!user){
-            return res.status(400).json({
-                message: "No user found with this email"
+            return sendResponse( res, {
+                statusCode: 500,
+                success: false,
+                message: 'No user exist with this email!!!',
             })
         }
 
         const pass = await bcrypt.compare(password, user.password)
         if(!pass){
-            return res.status(400).json({
-                message: "Invalid password"
+            return sendResponse( res, {
+                statusCode: 500,
+                success: false,
+                message: 'Invalid password!!!',
             })
         }
 
@@ -72,10 +82,11 @@ const logIn = async(req: Request, res: Response) => {
             maxAge: 7 * 24 * 60 * 60 * 1000 
         })
     
-
-        res.status(200).json({
-            "accessToken": accessToken, 
-            message : "Login successfull" 
+        sendResponse(res,{
+            statusCode: 200,
+            success: true,
+            message: "Login successful!!!",
+            meta: accessToken,
         })
     }catch(err){
         console.log(err)
@@ -88,31 +99,39 @@ const signUp = async(req: Request, res: Response) => {
         const collection = db.collection('users')
 
         const { name , email , password } = req.body
-        console.log(req.body)
+        
         if(!email || !password){
-            return res.status(400).json({
-                message: "No empty field allowed"
+            return sendResponse( res, {
+                statusCode: 500,
+                success: false,
+                message: 'No empty field allowed!!!',
             })
         }
 
 
         if(emaiReg.test(email) === false){
-            return res.status(400).json({
-                message: "Invalid email format"
+            return sendResponse( res, {
+                statusCode: 500,
+                success: false,
+                message: 'Invalid email format!!!',
             })
         }
 
         if(password.length < 6){
-            return res.status(400).json({
-                message: "Password is to short"
+            return sendResponse( res, {
+                statusCode: 500,
+                success: false,
+                message: 'Password is to short!!!',
             })
         }
         const query = { email: email }
         
         const user = await collection.findOne(query)
         if(user){
-            return res.status(400).json({
-                message: "User already exist. Please login!"
+            return sendResponse( res, {
+                statusCode: 500,
+                success: false,
+                message: 'User already exist!!!',
             })
         }
 
@@ -141,7 +160,7 @@ const signUp = async(req: Request, res: Response) => {
         })
 
         res.cookie(
-            "refresh-token",
+            "refreshToken",
             refreshToken,{
                 maxAge: 1000 * 60 * 15,
                 httpOnly: true,
@@ -149,13 +168,15 @@ const signUp = async(req: Request, res: Response) => {
             }
         )
 
-        res.json({
-            "response": result,
-            "accessToken": accessToken, 
-            message : "Signin successfull" 
+        sendResponse(res,{
+            statusCode: 200,
+            success: true,
+            message: "Signup successful!!!",
+            data: result,
+            meta: accessToken,
         })
     }catch(err){
-
+        console.log(err)
     }
 }
 

@@ -1,6 +1,9 @@
 import { Request , Response } from "express"
 import { fileUploadHelper } from "../../helper/fileUploadHelper"
+import { ObjectId } from "mongodb"
+import sendResponse from "../../helper/sendResponse"
 const { getDb } = require('../../config/connectDB')
+
 
 
 const createSpecialties = async( req: Request , res: Response ) => {
@@ -9,29 +12,31 @@ const createSpecialties = async( req: Request , res: Response ) => {
         const collection = db.collection('specialties')
 
         const { name } = req.body
-
         if (!name){
-            return res.status(400).json({
-                statusCode: 400,
-                message: "Failed!",
-                errorMessage: "Name required!"
+            return sendResponse( res, {
+                statusCode: 500,
+                success: false,
+                message: 'Name required!!!',
             })
         }
 
         const file = req.file
-
         if(!file){
-            return res.status(400).json({
-                statusCode: 400,
-                message: "Failed!",
-                errorMessage: "File required!"
+            return sendResponse( res, {
+                statusCode: 500,
+                success: false,
+                message: 'File required!!!',
             })
         }
 
         const uploaded:any = await fileUploadHelper.uploadToCloud(file)
-
         if(!uploaded){
-            return res.status(401).json({data:{data:"Unable to upload photo",meta:{}}})
+            return sendResponse( res, {
+                statusCode: 500,
+                success: false,
+                message: 'Failed to upload!!!',
+                data: uploaded,
+            })
         }
 
         const insertObj = {
@@ -41,15 +46,12 @@ const createSpecialties = async( req: Request , res: Response ) => {
 
         const result = await collection.insertOne(insertObj)
 
-        if(!result.acknowledged){
-            return res.status(500).json({data:{
-                statusCode:500,
-                message:"Failed",
-                errorMessage:"Insertion failed"
-            }})
-        }
-
-        res.status(200).json({data:{ data:"Insertion succeeded",meta: result }})
+        sendResponse(res,{
+            statusCode: 200,
+            success: true,
+            message: 'Insertion succeeded',
+            data: result,
+        })
     }catch(err){
         console.log(err)
         res.status(500).json({ error: 'Internal Server Error' });
@@ -65,14 +67,69 @@ const getAllSpecialties = async( req: Request , res: Response ) => {
         const specialties = await collection.find().sort({"_id": -1}).toArray()
         const countSp     = await collection.countDocuments()
 
+        const metaData = {
+            page: 0,
+            limit: 0,
+            total: countSp,
+        }
 
-        res.status(200).json({data:{ data: specialties ,meta: countSp }})
+        sendResponse(res,{
+            statusCode: 200,
+            success: true,
+            message: 'Specialty retrieval successfully',
+            meta: metaData,
+            data: specialties,
+        })
     }catch(err){
         console.log(err)
     }
 }
 
+
+const deleteSpecialty = async( req: Request , res: Response ) => {
+    try{
+        const db = getDb()
+        const collection = db.collection('specialties')
+
+        const id  = req.params.id
+        const query = { _id : new ObjectId(id) }
+        const exist = await collection.findOne(query)
+
+
+        if(!exist){
+            return sendResponse(res,{
+                statusCode: 500,
+                success: false,
+                message: 'No data exist',
+                data: exist,
+            })
+        }
+
+        const result = await collection.deleteOne(query);
+        
+        if(!result.acknowledged){
+            return sendResponse(res,{
+                statusCode: 500,
+                success: false,
+                message: "Failed to delete!!!",
+                data: result,
+            })
+        }
+
+        sendResponse(res,{
+            statusCode: 200,
+            success: true,
+            message: "Successfully deleted!!!",
+            data: result,
+        })
+    }catch(err){
+        console.log("error",err)
+    }
+}
+
+
 module.exports = {
     getAllSpecialties,
-    createSpecialties
+    createSpecialties,
+    deleteSpecialty
 }
