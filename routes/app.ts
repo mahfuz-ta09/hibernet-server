@@ -1,4 +1,5 @@
 import { authModule } from "../modules/authModule"
+import { courseModule } from "../modules/courseModule"
 import { specialtiesModule } from "../modules/specialtiesModule"
 
 const express = require('express')
@@ -12,6 +13,10 @@ const allRoutes = [
     {
         path: '/specialty',
         route: specialtiesModule
+    },
+    {
+        path: '/course',
+        route: courseModule
     },
 ]
 

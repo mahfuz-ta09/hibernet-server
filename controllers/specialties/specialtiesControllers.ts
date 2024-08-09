@@ -30,7 +30,7 @@ const createSpecialties = async( req: Request , res: Response ) => {
         }
 
         const uploaded:any = await fileUploadHelper.uploadToCloud(file)
-        if(!uploaded){
+        if(!uploaded.url){
             return sendResponse( res, {
                 statusCode: 500,
                 success: false,
@@ -105,8 +105,9 @@ const deleteSpecialty = async( req: Request , res: Response ) => {
             })
         }
 
-        const result = await collection.deleteOne(query);
-        
+        const deleted:any = await fileUploadHelper.deleteFromCloud(exist?.url)        
+        const result = await collection.deleteOne(query)
+
         if(!result.acknowledged){
             return sendResponse(res,{
                 statusCode: 500,

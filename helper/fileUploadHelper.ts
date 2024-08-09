@@ -26,7 +26,6 @@ const upload = multer({ storage: storage })
 
 
 const uploadToCloud = async(file:any)  =>{
-
   return new Promise((resolve, reject) => {
     cloudinary.uploader.upload(file.path,
         (error: Error, result: any) => {
@@ -42,7 +41,20 @@ const uploadToCloud = async(file:any)  =>{
 }
 
 
+const deleteFromCloud = async(publicId:string)  =>{
+    try {
+        console.log(publicId)
+        const result = await cloudinary.uploader.destroy(publicId)
+        return result
+      } catch (error) {
+        console.error("Error deleting from Cloudinary:", error)
+        throw error
+      }
+}
+
+
 export const fileUploadHelper = {
   upload,
-  uploadToCloud
+  uploadToCloud,
+  deleteFromCloud
 } 
