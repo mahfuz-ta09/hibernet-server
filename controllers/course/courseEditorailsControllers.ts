@@ -12,7 +12,6 @@ const createCourse = async( req: Request , res: Response) =>{
 
         const { name , total_classes , explain_classes, total_assignment, explain_assignment, total_exams, explain_exams, course_fee , duration, explain_durations, class_starts, class_ends, enroled_start, enroled_end, description } = req.body
         const file = req.file
-        // console.log(req.body , file)
 
         if(!name || !file ||  !total_classes ||  !explain_classes || !total_assignment || !explain_assignment || !total_exams || !explain_exams || !course_fee || !duration || !explain_durations || !class_starts || !class_ends || !enroled_start || !enroled_end || !description){
             return sendResponse(res,{
@@ -23,7 +22,7 @@ const createCourse = async( req: Request , res: Response) =>{
         }
 
         const uploaded:any = await fileUploadHelper.uploadToCloud(file)
-        console.log(uploaded)
+
         if(!uploaded.url){
             return sendResponse( res, {
                 statusCode: 500,
@@ -122,11 +121,14 @@ const editCourse = async( req: Request , res: Response) =>{
         const collection = db.collection('course')
 
         const id = req.params.id
-        const updateField = req.body
-        
+        const { name , total_classes , explain_classes, total_assignment, explain_assignment, total_exams, explain_exams, course_fee , duration, explain_durations, class_starts, class_ends, enroled_start, enroled_end, description } = req.body
+        const file = req?.file
+
+
         const query = { _id : new ObjectId(id) }
 
         const course = await collection.findOne(query)
+
         if(!course){
             return sendResponse(res,{
                 statusCode: 500,
@@ -134,12 +136,37 @@ const editCourse = async( req: Request , res: Response) =>{
                 message: "No course exist with the id!!!",
             })
         }
-        const updateDoc = {
-            $set: updateField,
-        }
         
+        let uploaded:any
+
+        if(file) uploaded = await fileUploadHelper.uploadToCloud(file)
+
+        const field:any = {
+            name : name ? name : course.name,
+            image : uploaded?.url ? uploaded.url : course.image,
+            total_classes : total_classes ? total_classes : course.total_classes ,
+            explain_classes : explain_classes ? explain_classes : course.explain_classes,
+            total_assignment : total_assignment ? total_assignment : course.total_assignment,
+            explain_assignment : explain_assignment ? explain_assignment : course.explain_assignment,
+            total_exams : total_exams ? total_exams : course.total_exams,
+            explain_exams : explain_exams ? explain_exams : course.explain_exams,
+            course_fee : course_fee ? course_fee : course.course_fee,
+            total_enroled : course.total_enroled,
+            duration : duration ? duration : course.duration,
+            explain_durations : explain_durations ? explain_durations : course.explain_durations,
+            class_starts : class_starts ? class_starts : course.class_starts,
+            class_ends : class_ends ? class_ends : course.class_ends,
+            enroled_start : enroled_start ? enroled_start : course.enroled_start,
+            enroled_end : enroled_end ? enroled_end : course.enroled_end,
+            description : description ? description : course.description,
+        }
+
+        const updateDoc = {
+            $set: field,
+        }
+
         const result = await collection.updateOne(query, updateDoc)
-        console.log(result)
+
         if(!result.acknowledged){
             return sendResponse(res,{
                 statusCode: 500,
@@ -152,7 +179,7 @@ const editCourse = async( req: Request , res: Response) =>{
             success: true,
             message: "Successfully updated!!!",
             data: result,
-          })
+        })
     } catch (error) {
         console.log(error)
     }
