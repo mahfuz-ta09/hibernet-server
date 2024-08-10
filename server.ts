@@ -13,7 +13,6 @@ const port = process.env.PORT || 7373
 
 connectDb()
 
-
 app.use(logger)
 app.use(cors(corsOption))
 app.use(express.json())
@@ -29,7 +28,7 @@ app.use('/app/v1',routes)
 
 app.get('/test', async (req: Request, res: Response) => {
   res.status(200).json({
-    message: 'Server working....!',
+    message: 'Server working...!!!',
   })
 })
 
