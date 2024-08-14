@@ -49,7 +49,9 @@ const createCourse = async( req: Request , res: Response) =>{
             class_ends : class_ends,
             enroled_start : enroled_start,
             enroled_end : enroled_end,
-            description : description
+            description : description,
+            studentData : [],
+            courseContent:[]
         }
 
         const result = await collection.insertOne(insertedObject)
