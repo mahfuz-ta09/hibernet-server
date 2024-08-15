@@ -13,7 +13,6 @@ const port = process.env.PORT || 7373
 
 connectDb()
 
-//  mat@@pass@f1fb
 
 app.use(logger)
 app.use(cors(corsOption))

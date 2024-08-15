@@ -42,6 +42,7 @@ const logIn = async(req: Request, res: Response) => {
         const query = { email: email }
         
         const user = await collection.findOne(query)
+        console.log(user._id)
         if(!user){
             return sendResponse( res, {
                 statusCode: 500,
@@ -60,6 +61,7 @@ const logIn = async(req: Request, res: Response) => {
         }
 
         const userData = {
+            id: user._id,
             email: email,
             role: user.role
         }
@@ -142,11 +144,15 @@ const signUp = async(req: Request, res: Response) => {
             password:hashedPassword,
             role: ''
         }
+
         const result = await collection.insertOne(userObject)
+
         const userData = {
+            id: result.insertedId,
             email: email,
             role: ''
         }
+
         const accessToken = jwt.sign(
             userData, 
             process.env.ACCESSTOKEN, { 

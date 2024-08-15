@@ -55,7 +55,7 @@ const createCourse = async( req: Request , res: Response) =>{
         }
 
         const result = await collection.insertOne(insertedObject)
-        console.log(result)
+
         if(!result.acknowledged){
             return sendResponse(res,{
                 statusCode: 500,
@@ -193,7 +193,9 @@ const getAllCourses = async( req: Request , res: Response) =>{
         const collection = db.collection('course')
 
 
-        const courses = await collection.find().sort({"_id": -1}).toArray()
+        const courses = await collection.find({}, { 
+                projection: { courseContent: 0, studentData: 0 }
+            }).sort({"_id": -1}).toArray()
         const countCourse     = await collection.countDocuments()
 
         const metaData = {
@@ -214,6 +216,7 @@ const getAllCourses = async( req: Request , res: Response) =>{
     }
 }
 
+
 const getSingleCourse = async( req: Request , res: Response) =>{
     try {
         const db = getDb()
@@ -221,7 +224,7 @@ const getSingleCourse = async( req: Request , res: Response) =>{
 
         const id = req.params.id 
         const query = { _id : new ObjectId(id)}
-        const course = await collection.findOne(query)
+        const course = await collection.findOne(query,{projection: { courseContent: 0, studentData: 0 }})
 
         if(!course){
             return sendResponse(res,{
