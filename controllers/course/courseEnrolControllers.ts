@@ -11,7 +11,6 @@ const enroleCourse = async( req: Request , res: Response) =>{
         const collection = db.collection('course')
 
         const id = req.params.id
-        console.log(id,req.body)
         const { stdID , stdEmail } = req.body
 
         if(!id || !stdID || !stdEmail){
@@ -31,6 +30,20 @@ const enroleCourse = async( req: Request , res: Response) =>{
         }
 
         const query = { _id: new ObjectId(id) }
+        const course = await collection.findOne( query )
+        let found
+
+        if(course) found = course?.studentData?.find((single :any) => single.stdID === stdID)
+
+
+        if(found?.stdID){
+            return sendResponse(res,{
+                statusCode: 500,
+                success: false,
+                message: `Already enroled. ${!found?.paid ? "Please finish payment" : ""}`,
+            })
+        }
+
         const options = { upsert: true }
         const updateDoc = {
             $push: {
@@ -39,17 +52,18 @@ const enroleCourse = async( req: Request , res: Response) =>{
         }
 
         const result = await collection.updateOne(query , updateDoc , options)
-        console.log(result)
-        if(!result.acknowledged){
+
+        if(result.modifiedCount !== 1){
             return sendResponse(res,{
                 statusCode: 500,
                 success: false,
                 message: "Failed to enrol!!!",
             })
         }
+
         sendResponse(res,{
-            statusCode: 500,
-            success: false,
+            statusCode: 200,
+            success: true,
             message: "Successfull! Pay to finish the process!!!",
             data: result,
         })
