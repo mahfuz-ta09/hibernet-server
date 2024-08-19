@@ -4,7 +4,6 @@ import sendResponse from "../../helper/sendResponse"
 const { getDb } = require('../../config/connectDB')
 
 
-
 const enroleCourse = async( req: Request , res: Response) =>{
     try{
         const db = getDb()
@@ -72,6 +71,7 @@ const enroleCourse = async( req: Request , res: Response) =>{
         console.log(err)
     }
 }
+
 
 module.exports = {
     enroleCourse

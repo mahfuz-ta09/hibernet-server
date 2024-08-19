@@ -8,7 +8,6 @@ const storage = multer.memoryStorage()
 const upload = multer({ storage })
 
 
-
 // course editorials 
 router.get('/all', 
     getAllCourses)

@@ -137,7 +137,7 @@ const signUp = async(req: Request, res: Response) => {
             })
         }
 
-        const hashedPassword = await bcrypt.hash(password,10)        
+        const hashedPassword = await bcrypt.hash(password,10)
         const userObject:UserObject = {
             name:name,
             email:email,
