@@ -123,8 +123,6 @@ const updateAdminStatus = async ( req: Request , res: Response ) =>{
             })
         }
 
-        console.log(id,status)
-
 
         const query = { _id: new ObjectId(id) }
         const exist = await collection.findOne(query)
@@ -137,18 +135,19 @@ const updateAdminStatus = async ( req: Request , res: Response ) =>{
             })
         }
 
-        console.log(exist)
+
         const updateDoc = {
             $set: {
                 status: exist?.status == true ? false : true
             },
         }
         const result = await collection.updateOne(query, updateDoc)
-        if(result.updateCount !== 1){
+        
+        if(result.modifiedCount !== 1){
             return sendResponse(res,{
                 statusCode: 500,
                 success: false,
-                message: 'Failed to delete.',
+                message: 'Failed to update status.',
             })
         }
 
@@ -211,6 +210,12 @@ const updateAdminPassword = async( req: Request , res: Response) =>{
         })
     }catch(err){
         console.log(err)
+        sendResponse(res,{
+            statusCode: 500,
+            success: false,
+            message: 'Interner error',
+            data: err
+        })
     }
 }
 
