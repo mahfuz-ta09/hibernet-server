@@ -51,7 +51,8 @@ const createCourse = async( req: Request , res: Response) =>{
             enroled_end : enroled_end,
             description : description,
             studentData : [],
-            courseContent:[]
+            courseContent:[],
+            courseSchedule: []
         }
 
         const result = await collection.insertOne(insertedObject)
@@ -71,8 +72,14 @@ const createCourse = async( req: Request , res: Response) =>{
             message: "Inserted successfully!!!",
             data: result,
         })
-    } catch (error) {
-        console.log(error)
+    } catch (err) {
+        console.log(err)
+        sendResponse(res,{
+            statusCode: 500,
+            success: false,
+            message: 'Internel server error',
+            data: err
+        })
     }
 }
 
@@ -112,8 +119,14 @@ const deleteCourse = async( req: Request , res: Response) =>{
             message: "Successfully deleted!!!",
             data: result,
         })
-    } catch (error) {
-        console.log(error)
+    } catch (err) {
+        console.log(err)
+        sendResponse(res,{
+            statusCode: 500,
+            success: false,
+            message: 'Internel server error',
+            data: err
+        })
     }
 }
 
@@ -182,8 +195,14 @@ const editCourse = async( req: Request , res: Response) =>{
             message: "Successfully updated!!!",
             data: result,
         })
-    } catch (error) {
-        console.log(error)
+    } catch (err) {
+        console.log(err)
+        sendResponse(res,{
+            statusCode: 500,
+            success: false,
+            message: 'Internel server error',
+            data: err
+        })
     }
 }
 
@@ -192,9 +211,8 @@ const getAllCourses = async( req: Request , res: Response) =>{
         const db = getDb()
         const collection = db.collection('course')
 
-
         const courses = await collection.find({}, { 
-                projection: { courseContent: 0, studentData: 0 }
+                projection: { courseContent: 0, studentData: 0 , courseSchedule: 0}
             }).sort({"_id": -1}).toArray()
         const countCourse     = await collection.countDocuments()
 
@@ -211,8 +229,14 @@ const getAllCourses = async( req: Request , res: Response) =>{
             meta: metaData,
             data: courses,
         })
-    } catch (error) {
-        console.log(error)
+    } catch (err) {
+        console.log(err)
+        sendResponse(res,{
+            statusCode: 500,
+            success: false,
+            message: 'Internel server error',
+            data: err
+        })
     }
 }
 
@@ -241,8 +265,14 @@ const getSingleCourse = async( req: Request , res: Response) =>{
             message: "Showing course details",
             data: course,
         })
-    } catch (error) {
-        console.log(error)
+    } catch (err) {
+        console.log(err)
+        sendResponse(res,{
+            statusCode: 500,
+            success: false,
+            message: 'Internel server error',
+            data: err
+        })
     }
 }
 

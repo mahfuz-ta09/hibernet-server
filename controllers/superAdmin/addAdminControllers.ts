@@ -1,6 +1,5 @@
 import { Request , Response } from "express"
 const bcrypt = require("bcrypt")
-import { fileUploadHelper } from "../../helper/fileUploadHelper"
 import { ObjectId } from "mongodb"
 import sendResponse from "../../helper/sendResponse"
 const { getDb } = require('../../config/connectDB')
@@ -56,6 +55,12 @@ const createAdmin = async( req: Request , res: Response ) =>{
         })
     }catch(err){
         console.log(err)
+        sendResponse(res,{
+            statusCode: 500,
+            success: false,
+            message: 'Internel server error',
+            data: err
+        })
     }
 }
 
@@ -66,6 +71,7 @@ const deleteAdmin = async( req: Request , res: Response) =>{
         const collection = db.collection('admin')
 
         const id = req.params.id
+        console.log(id)
         if(!id){
             return sendResponse(res,{
                 statusCode: 500,
@@ -102,6 +108,12 @@ const deleteAdmin = async( req: Request , res: Response) =>{
         })
     }catch(err){
         console.log(err)
+        sendResponse(res,{
+            statusCode: 500,
+            success: false,
+            message: 'Internel server error',
+            data: err
+        })
     }
 }
 
@@ -159,6 +171,12 @@ const updateAdminStatus = async ( req: Request , res: Response ) =>{
         })
     }catch(err){
         console.log(err)
+        sendResponse(res,{
+            statusCode: 500,
+            success: false,
+            message: 'Internel server error',
+            data: err
+        })
     }
 }
 
@@ -213,7 +231,7 @@ const updateAdminPassword = async( req: Request , res: Response) =>{
         sendResponse(res,{
             statusCode: 500,
             success: false,
-            message: 'Interner error',
+            message: 'Internel server error',
             data: err
         })
     }
@@ -253,7 +271,7 @@ const getAllAdmin = async( req: Request , res: Response) =>{
         sendResponse(res,{
             statusCode: 500,
             success: false,
-            message: 'Interner error',
+            message: 'Internel server error',
             data: err
         })
     }

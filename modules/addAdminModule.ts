@@ -3,7 +3,7 @@ const router = express.Router()
 const multer = require('multer')
 const storage = multer.memoryStorage()
 const upload = multer({ storage })
-const { createAdmin , updateAdminStatus , getAllAdmin } = require('../controllers/superAdmin/addAdminControllers')
+const { createAdmin , updateAdminStatus , getAllAdmin , deleteAdmin } = require('../controllers/superAdmin/addAdminControllers')
 
 
 router.post('/create',
@@ -16,4 +16,8 @@ router.patch(`/update/:status/:id`,
 router.get('/all/admin',
     getAllAdmin)
 
+router.delete('/delete/admin/:id',
+    deleteAdmin)
+
+    
 export const addAdminModule = router
