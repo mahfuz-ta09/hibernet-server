@@ -4,12 +4,19 @@ const uri = process.env.DATABASE_URI
 
 let db:any
 let client:any
+let isConnected = false
 
 const connectDb = async() =>{
+    if(isConnected && db){
+        console.log("Using existing database connection.")
+        return db
+    }
+
     try{
         client = new MongoClient(uri)
         await client.connect()
         db = client.db()
+        isConnected = true
 
         console.log("Database connected successfully!")
         return db
